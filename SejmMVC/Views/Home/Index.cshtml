@@ -16,248 +16,331 @@
         @Html.AntiForgeryToken()
 
         <!-- Grid for the view -->
-        <div class="container students-view" style="width: 35vw">
+        <div class="container students-view" style="width: 100vw">
+        
+            
 
-            <!-- Cards row -->
-            <div class="row">
-                <!-- Search card -->
-                <div class="col-md-3">
-                    <a href="~/Home/Index" role="button" class="btn btn-info" style="width:100%;cursor:default">
-                        Przeglądaj
-                    </a>
+        <!-- Content row -->
+        <div class="row">
+
+            <!-- Filter panel -->
+            <div class="col-md-6">
+
+                <!-- Cards row -->
+                <div class="row">
+                    <!-- Search card -->
+                    <div class="col-md-4">
+                        <a href="~/Home/Index" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                            Wyszukaj
+                        </a>
+                    </div>
+
+                    <!-- Poseł i klub card -->
+                    <div class="col-md-4">
+                        <a href="~/Home/Posel" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                            Posłowie i kluby
+                        </a>
+                    </div>
+
+                    <!-- Vote and acts card -->
+                    <div class="col-md-4">
+                        <a href="~/Home/Vote" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                            Ustawy i głosy
+                        </a>
+                    </div>
+
                 </div>
 
-                <!-- Poseł card -->
-                <div class="col-md-3">
-                    <a href="~/Home/Posel" role="button" class="btn btn-info" style="width:100%;cursor:default">
-                        Posłowie
-                    </a>
-                </div>
+                <div style="border-style: dotted; border-width: thin; margin-bottom: 2vh">
+                    <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                        POSŁOWIE
+                    </div>
 
-                <!-- Club card -->
-                <div class="col-md-3">
-                    <a href="~/Home/Club" role="button" class="btn btn-info" style="width:100%;cursor:default">
-                        Kluby
-                    </a>
-                </div>
+                    <!-- Filter posłów row-->
 
-                <!-- Vote card -->
-                <div class="col-md-3">
-                    <a href="~/Home/Vote" role="button" class="btn btn-info" style="width:100%;cursor:default">
-                        Głosy
-                    </a>
-                </div>
+                    <div class="row" style="padding: 1vh">
 
-            </div>
+                        <!-- Filter fields -->
+                        <div class="col-md-10">
 
-            <!-- Filter row-->
-            <div class="row">
-
-                <!-- Filter fields -->
-                <div class="col-md-8">
-
-                    <!-- Filter by club row -->
-                    <div class="row">
-                        <div class="col-md-3" style="text-align:right">
-                            Klub:
-                        </div>
-                        <div class="col-md-9">
-                            @Html.DropDownListFor(
+                            <!-- Filter by club row -->
+                            <div class="row">
+                                <div class="col-md-3" style="text-align:right">
+                                    Klub:
+                                </div>
+                                <div class="col-md-9">
+                                    @Html.DropDownListFor(
                                 m => m.filterPosełByClub,
                                 Model.data.Kluby.Select(
                                     s => new SelectListItem()
-                                    { Text = s.ToString(), Value = s.ID.ToString() }
+                                    { Text = s.Nazwa, Value = s.ID.ToString() }
                                 ).Concat(new SelectListItem[] {
                                     new SelectListItem() { Text = "No filter", Value = "", Selected=true }
                                 }),
                                 new { @style = "width:100%;height:4vh" }
                             )
-                        </div>
-                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Filter city row -->
-                    <div class="row">
-                        <div class="col-md-3" style="text-align:right">
-                            Miasto:
-                        </div>
-                        <div class="col-md-9">
-                            @Html.TextBoxFor(
-                                m => m.filterCity, "",
+                            <!-- Filter by name row -->
+                            <div class="row">
+                                <div class="col-md-3" style="text-align:right">
+                                    Imie/Nazwisko:
+                                </div>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(
+                                m => m.filterPosełByName, "",
                                 new { @style = "width:100%" }
                             )
+                                </div>
+                            </div>
                         </div>
+
+                    </div> <!-- /Filter row -->
+                    <!-- Poseł list row -->
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <!-- Fixed-width scrolled container for students data-->
+                            <div style="height: 15vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
+                                <table style="width:100%">
+
+                                    @foreach (var st in Model.data.Posłowie)
+                                    {
+                                        <tr class="student-list-row" onclick="location.href = '@Url.Action("Index","Home",new { pId = st.ID })'">
+                                            <td>
+                                                @Html.DisplayFor(s => st.Nazwisko)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(s => st.Imie)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(s => st.Klub.Nazwa)
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+
+                            </div> <!-- /Container-->
+
+                        </div>
+
+                    </div> <!-- /Poseł list row -->
+
+                </div>
+
+                <div style="border-style: dotted; border-width: thin; margin-bottom: 2vh">
+                    <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                        USTAWY
+                    </div>
+
+                    <!-- Filter ustawy row-->
+                    <div class="row" style="padding: 1vh">
+
+                        <!-- Filter fields -->
+                        <div class="col-md-10">
+
+                            <!-- Filter by club row -->
+                            <div class="row">
+                                <div class="col-md-3" style="text-align:right">
+                                    Klub:
+                                </div>
+                                <div class="col-md-9">
+                                    @Html.DropDownListFor(
+                                m => m.filterUstawaByClub,
+                                Model.data.Kluby.Select(
+                                    s => new SelectListItem()
+                                    { Text = s.Nazwa, Value = s.ID.ToString() }
+                                ).Concat(new SelectListItem[] {
+                                    new SelectListItem() { Text = "No filter", Value = "", Selected=true }
+                                }),
+                                new { @style = "width:100%;height:4vh" }
+                            )
+                                </div>
+                            </div>
+
+                            <!-- Filter by name row -->
+                            <div class="row">
+                                <div class="col-md-3" style="text-align:right">
+                                    Nazwa:
+                                </div>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(
+                                m => m.filterUstawaByName, "",
+                                new { @style = "width:100%" }
+                            )
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- /Filter row -->
+                    <!-- Ustawy list row -->
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <!-- Fixed-width scrolled container for ustawy data-->
+                            <div style="height: 15vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
+                                <table style="width:100%">
+
+                                    @foreach (var st in Model.data.Ustawy)
+                                    {
+                                        var date = st.Data.Day + "." + st.Data.Month + "." + st.Data.Year;
+                                        <tr class="student-list-row" onclick="location.href = '@Url.Action("Index","Home",new { uId = st.ID })'">
+                                            <td>
+                                                @Html.DisplayFor(s => st.Nazwa)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(s => date)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(s => st.Klub.Nazwa)
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+
+                            </div> <!-- /Container-->
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Filter buttons row -->
+                <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                    <!-- Filter button -->
+                    <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px;margin:auto">
+                        <input type="submit" value="Filtruj" class="btn btn-success"
+                               style="width:100%; height:100%; margin:auto;cursor:default" />
+                    </div>
+
+                    <!-- Clear button -->
+                    <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px">
+                        <a href="~/Home/Index" role="button" class="btn btn-danger" style="width:100%;height:100%;cursor:default;margin:auto">
+                            Odśwież
+                        </a>
                     </div>
                 </div>
 
-                <!-- Filter button -->
-                <div class="col-md-2" style="height:9vh;padding:0;padding-right:15px">
-                    <input type="submit" value="Filtruj" class="btn btn-success"
-                           style="width:100%; height:100%; margin:auto;cursor:default" />
+
+
+            </div>
+
+            <!-- Votes panel -->
+            <div class="col-md-6" style="padding-top: 5.5vh">
+
+                <div style="border-style: dotted; border-width: thin; margin-bottom: 2vh">
+                    <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                        GŁOSY
+                    </div>
+
+                    <!-- Filter Głosy row-->
+                    <div id="glosy" class="row" style="padding: 1vh">
+
+                        <!-- Filter fields -->
+                        <div class="col-md-8">
+
+                            <!-- Filter by name row -->
+                            <div class="row">
+                                <div class="col-md-3" style="text-align:right">
+                                    Filtruj:
+                                </div>
+                                <div class="col-md-9">
+                                    @Html.TextBoxFor(
+                                m => m.filterVoteByName, "",
+                                new { @style = "width:100%" }
+                            )
+                                </div>
+                            </div>
+                        </div>
+
+                    </div> <!-- /Filter row -->
+
+                    <!-- Filter votes buttons row -->
+                    <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                        <!-- Filter button -->
+                        <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px;margin:auto">
+                            <input type="submit" value="Filtr" class="btn btn-success"
+                                   style="width:100%; height:100%; margin:auto;cursor:default" />
+                        </div>
+
+                        <!-- Clear button -->
+                        <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px">
+                            <a href="~/Home/Index" role="button" class="btn btn-danger" style="width:100%;height:100%;cursor:default;margin:auto">
+                                Odśwież
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Głosy list row -->
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <!-- Fixed-width scrolled container for ustawy data-->
+                            <div style="height: 55vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
+                                <table style="width:100%">
+
+                                    @foreach (var st in Model.data.Głosy)
+                                    {
+                                        var voteText = st.Głosował != null ? ((bool)st.Głosował ? "za" : "przeciw") : "wstrzymał się";
+                                        <tr class="student-list-row-no-light">
+                                            <td>
+                                                @Html.DisplayFor(s => st.Ustawa1.Nazwa)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(s => st.Poseł1.Nazwisko)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(s => st.Poseł1.Imie)
+                                            </td>
+                                            <td>
+
+                                                @Html.DisplayFor(s => voteText)
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+
+
+                            </div> <!-- /Container-->
+
+                        </div>
+
+                    </div>
+
                 </div>
 
-                <!-- Clear button -->
-                <div class="col-md-2" style="height:9vh;padding:0;padding-right:15px">
-                    <a href="~/Home/Index" role="button" class="btn btn-danger" style="width:100%;height:100%;cursor:default;padding-top:3vh">
-                        Odśwież
-                    </a>
-                </div>
-            </div> <!-- /Filter row -->
-            <!-- Students list row -->
-            <div class="row">
-                <div class="col-md-12">
-
-                    <!-- Fixed-width scrolled container for students data-->
-                    <div style="height: 20vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
-                        <table style="width:100%">
-
-                            @foreach (var st in Model.data.Students)
-                            {
-                                <tr class="student-list-row" onclick="location.href = '@Url.Action("Index","Home",new { stId = st.IDStudent })'">
-                                    <td>
-                                        @Html.DisplayFor(s => st.LastName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(s => st.FirstName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(s => st.Group.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(s => st.BirthPlace)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(s => st.IndexNo)
-                                    </td>
-                                </tr>
-                            }
-                        </table>
 
 
-                    </div> <!-- /Container-->
+                <!-- Potential error messages row -->
+                <div class="row">
+                    <div class="col-md-12">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <span style="color:red;text-align:center;margin:auto">
+                            @Html.DisplayFor(m => m.ErrMsg)
+                        </span>
+
+                    </div>
 
                 </div>
+
+
+
 
             </div>
 
 
-            <!-- Potential error messages row -->
-            <div class="row">
-                <div class="col-md-12">
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    <span style="color:red;text-align:center;margin:auto">
-                        @Html.DisplayFor(m => m.ErrMsg)
-                    </span>
+        </div>
 
-                </div>
+       
 
-            </div>
-
-
-            <!-- Change group row -->
-            <div class="row">
-                <div class="col-md-4" style="text-align:right">
-                    Grupa:
-                </div>
-                <div class="col-md-8">
-                    @Html.DropDownListFor(
-                                m => m.chosenStudentGroup,
-                                Model.data.Groups.Select(
-                                    s => new SelectListItem()
-                                    { Text = s.ToString(), Value = s.IDGroup.ToString() }
-                                ).Concat(new SelectListItem[] {
-                                    new SelectListItem() { Text = "--", Value = "", Selected=true }
-                                }),
-                                new { @style = "width:100%;height:4vh" }
-                    )
-                </div>
-            </div>
-
-            <!-- Change first name -->
-            <div class="row">
-                <div class="col-md-4" style="text-align:right">
-                    Imie:
-                </div>
-                <div class="col-md-8">
-                    @Html.TextBoxFor(
-                   m => m.chosenStudent[0].FirstName, Model.chosenStudent[0].FirstName,
-                   new { @style = "width:100%" })
-                </div>
-            </div>
-
-            <!-- Change last name -->
-            <div class="row">
-                <div class="col-md-4" style="text-align:right">
-                    Nazwisko:
-                </div>
-                <div class="col-md-8">
-                    @Html.TextBoxFor(
-                   m => m.chosenStudent[0].LastName, Model.chosenStudent[0].LastName,
-                   new { @style = "width:100%" })
-                </div>
-            </div>
-
-            <!-- Change birth place -->
-            <div class="row">
-                <div class="col-md-4" style="text-align:right">
-                    Miejsce urodzenia:
-                </div>
-                <div class="col-md-8">
-                    @Html.TextBoxFor(
-                   m => m.chosenStudent[0].BirthPlace, Model.chosenStudent[0].BirthPlace,
-                   new { @style = "width:100%" })
-                </div>
-            </div>
-
-            <!-- Change birth date -->
-            <div class="row">
-                <div class="col-md-4" style="text-align:right">
-                    Data urodzenia:
-                </div>
-                <div class="col-md-8">
-                    @Html.TextBoxFor(
-                        m => m.chosenStudent[0].BirthDate,
-                        Model.chosenStudent[0].BirthDate != null ?
-                        Model.chosenStudent[0].BirthDate.Value.Date.Day.ToString() + "." +
-                        Model.chosenStudent[0].BirthDate.Value.Date.Month.ToString() + "." +
-                        Model.chosenStudent[0].BirthDate.Value.Date.Year.ToString() :
-                        "",
-                   new { @style = "width:100%" })
-                </div>
-            </div>
-
-            <!-- Change index no -->
-            <div class="row">
-                <div class="col-md-4" style="text-align:right">
-                    Numer indeksu:
-                </div>
-                <div class="col-md-8">
-                    @Html.TextBoxFor(
-                   m => m.chosenStudent[0].IndexNo, Model.chosenStudent[0].IndexNo,
-                   new { @style = "width:100%" })
-                    @Html.HiddenFor(m => m.chosenStudentStamp, "")
-                    @Html.HiddenFor(m => m.chosenStudentID, "")
-                </div>
-            </div>
-
-            <!-- Save/Delete/New buttons -->
-            <div class="row">
-                <div class="col-md-6" style="text-align:right">
-
-                </div>
-                <div class="col-md-2" style="padding:0.5vh">
-                    <input type="submit" class="btn btn-info" value="Zapisz" name="action" style="width:100%;cursor:default" />
-                </div>
-                <div class="col-md-2" style="padding:0.5vh">
-                    <input type="submit" class="btn btn-info" value="Usuń" name="action" style="width:100%;cursor:default" />
-                </div>
-                <div class="col-md-2" style="padding:0.5vh;padding-right:15px">
-                    <input type="submit" class="btn btn-info" value="Nowy" name="action" style="width:100%;cursor:default" />
-                </div>
-
-            </div>
-
-
-
+            
+            
+    
+            
         </div> <!-- /Grid -->
 
 

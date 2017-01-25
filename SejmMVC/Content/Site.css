@@ -27,6 +27,14 @@
     border-collapse:collapse
 }
 
+.student-list-row-no-light {
+    border-style:solid;
+    border-width:1px;
+    border-color:lightgray;
+    cursor:default;
+    border-collapse:collapse
+}
+
 .student-list-row:hover {
     background-color: aqua;
     border-color:lightblue;
