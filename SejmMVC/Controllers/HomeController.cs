@@ -13,6 +13,20 @@ namespace SejmMVC.Controllers
             return View();
         }
 
+        public ActionResult Posel()
+        {
+            return View();
+        }
+
+        public ActionResult Club()
+        {
+            return View();
+        }
+
+        public ActionResult Vote()
+        {
+            return View();
+        }
 
     }
 }

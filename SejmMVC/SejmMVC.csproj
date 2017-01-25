@@ -168,8 +168,10 @@
     </Compile>
     <Compile Include="Głos.cs" />
     <Compile Include="Klub.cs" />
-    <Compile Include="Models\EditViewModel.cs" />
+    <Compile Include="Models\ClubViewModel.cs" />
+    <Compile Include="Models\PosełViewModel.cs" />
     <Compile Include="Models\SearchViewModel.cs" />
+    <Compile Include="Models\VoteViewModel.cs" />
     <Compile Include="Poseł.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage.cs" />
@@ -211,6 +213,9 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Posel.cshtml" />
+    <Content Include="Views\Home\Club.cshtml" />
+    <Content Include="Views\Home\Vote.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

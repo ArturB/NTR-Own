@@ -1,31 +1,270 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿@model SejmMVC.Models.SearchViewModel
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SejmMVC</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="~/Content/Site.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+</head>
+<body style="color:black">
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <!-- Grid for the view -->
+        <div class="container students-view" style="width: 35vw">
+
+            <!-- Cards row -->
+            <div class="row">
+                <!-- Search card -->
+                <div class="col-md-3">
+                    <a href="~/Home/Index" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                        Przeglądaj
+                    </a>
+                </div>
+
+                <!-- Poseł card -->
+                <div class="col-md-3">
+                    <a href="~/Home/Posel" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                        Posłowie
+                    </a>
+                </div>
+
+                <!-- Club card -->
+                <div class="col-md-3">
+                    <a href="~/Home/Club" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                        Kluby
+                    </a>
+                </div>
+
+                <!-- Vote card -->
+                <div class="col-md-3">
+                    <a href="~/Home/Vote" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                        Głosy
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Filter row-->
+            <div class="row">
+
+                <!-- Filter fields -->
+                <div class="col-md-8">
+
+                    <!-- Filter by club row -->
+                    <div class="row">
+                        <div class="col-md-3" style="text-align:right">
+                            Klub:
+                        </div>
+                        <div class="col-md-9">
+                            @Html.DropDownListFor(
+                                m => m.filterPosełByClub,
+                                Model.data.Kluby.Select(
+                                    s => new SelectListItem()
+                                    { Text = s.ToString(), Value = s.ID.ToString() }
+                                ).Concat(new SelectListItem[] {
+                                    new SelectListItem() { Text = "No filter", Value = "", Selected=true }
+                                }),
+                                new { @style = "width:100%;height:4vh" }
+                            )
+                        </div>
+                    </div>
+
+                    <!-- Filter city row -->
+                    <div class="row">
+                        <div class="col-md-3" style="text-align:right">
+                            Miasto:
+                        </div>
+                        <div class="col-md-9">
+                            @Html.TextBoxFor(
+                                m => m.filterCity, "",
+                                new { @style = "width:100%" }
+                            )
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter button -->
+                <div class="col-md-2" style="height:9vh;padding:0;padding-right:15px">
+                    <input type="submit" value="Filtruj" class="btn btn-success"
+                           style="width:100%; height:100%; margin:auto;cursor:default" />
+                </div>
+
+                <!-- Clear button -->
+                <div class="col-md-2" style="height:9vh;padding:0;padding-right:15px">
+                    <a href="~/Home/Index" role="button" class="btn btn-danger" style="width:100%;height:100%;cursor:default;padding-top:3vh">
+                        Odśwież
+                    </a>
+                </div>
+            </div> <!-- /Filter row -->
+            <!-- Students list row -->
+            <div class="row">
+                <div class="col-md-12">
+
+                    <!-- Fixed-width scrolled container for students data-->
+                    <div style="height: 20vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
+                        <table style="width:100%">
+
+                            @foreach (var st in Model.data.Students)
+                            {
+                                <tr class="student-list-row" onclick="location.href = '@Url.Action("Index","Home",new { stId = st.IDStudent })'">
+                                    <td>
+                                        @Html.DisplayFor(s => st.LastName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(s => st.FirstName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(s => st.Group.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(s => st.BirthPlace)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(s => st.IndexNo)
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+
+
+                    </div> <!-- /Container-->
+
+                </div>
+
+            </div>
+
+
+            <!-- Potential error messages row -->
+            <div class="row">
+                <div class="col-md-12">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <span style="color:red;text-align:center;margin:auto">
+                        @Html.DisplayFor(m => m.ErrMsg)
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Change group row -->
+            <div class="row">
+                <div class="col-md-4" style="text-align:right">
+                    Grupa:
+                </div>
+                <div class="col-md-8">
+                    @Html.DropDownListFor(
+                                m => m.chosenStudentGroup,
+                                Model.data.Groups.Select(
+                                    s => new SelectListItem()
+                                    { Text = s.ToString(), Value = s.IDGroup.ToString() }
+                                ).Concat(new SelectListItem[] {
+                                    new SelectListItem() { Text = "--", Value = "", Selected=true }
+                                }),
+                                new { @style = "width:100%;height:4vh" }
+                    )
+                </div>
+            </div>
+
+            <!-- Change first name -->
+            <div class="row">
+                <div class="col-md-4" style="text-align:right">
+                    Imie:
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(
+                   m => m.chosenStudent[0].FirstName, Model.chosenStudent[0].FirstName,
+                   new { @style = "width:100%" })
+                </div>
+            </div>
+
+            <!-- Change last name -->
+            <div class="row">
+                <div class="col-md-4" style="text-align:right">
+                    Nazwisko:
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(
+                   m => m.chosenStudent[0].LastName, Model.chosenStudent[0].LastName,
+                   new { @style = "width:100%" })
+                </div>
+            </div>
+
+            <!-- Change birth place -->
+            <div class="row">
+                <div class="col-md-4" style="text-align:right">
+                    Miejsce urodzenia:
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(
+                   m => m.chosenStudent[0].BirthPlace, Model.chosenStudent[0].BirthPlace,
+                   new { @style = "width:100%" })
+                </div>
+            </div>
+
+            <!-- Change birth date -->
+            <div class="row">
+                <div class="col-md-4" style="text-align:right">
+                    Data urodzenia:
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(
+                        m => m.chosenStudent[0].BirthDate,
+                        Model.chosenStudent[0].BirthDate != null ?
+                        Model.chosenStudent[0].BirthDate.Value.Date.Day.ToString() + "." +
+                        Model.chosenStudent[0].BirthDate.Value.Date.Month.ToString() + "." +
+                        Model.chosenStudent[0].BirthDate.Value.Date.Year.ToString() :
+                        "",
+                   new { @style = "width:100%" })
+                </div>
+            </div>
+
+            <!-- Change index no -->
+            <div class="row">
+                <div class="col-md-4" style="text-align:right">
+                    Numer indeksu:
+                </div>
+                <div class="col-md-8">
+                    @Html.TextBoxFor(
+                   m => m.chosenStudent[0].IndexNo, Model.chosenStudent[0].IndexNo,
+                   new { @style = "width:100%" })
+                    @Html.HiddenFor(m => m.chosenStudentStamp, "")
+                    @Html.HiddenFor(m => m.chosenStudentID, "")
+                </div>
+            </div>
+
+            <!-- Save/Delete/New buttons -->
+            <div class="row">
+                <div class="col-md-6" style="text-align:right">
+
+                </div>
+                <div class="col-md-2" style="padding:0.5vh">
+                    <input type="submit" class="btn btn-info" value="Zapisz" name="action" style="width:100%;cursor:default" />
+                </div>
+                <div class="col-md-2" style="padding:0.5vh">
+                    <input type="submit" class="btn btn-info" value="Usuń" name="action" style="width:100%;cursor:default" />
+                </div>
+                <div class="col-md-2" style="padding:0.5vh;padding-right:15px">
+                    <input type="submit" class="btn btn-info" value="Nowy" name="action" style="width:100%;cursor:default" />
+                </div>
+
+            </div>
+
+
+
+        </div> <!-- /Grid -->
+
+
+
+    }
+    <!-- /Html.BeginForm -->
+
+
+</body>
+</html>

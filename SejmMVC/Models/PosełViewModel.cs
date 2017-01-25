@@ -5,7 +5,7 @@ using System.Web;
 
 namespace SejmMVC.Models
 {
-    public class EditViewModel
+    public class PosełViewModel
     {
 
     }
