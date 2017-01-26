@@ -8,30 +8,88 @@ using System.Data.Entity;
 
 namespace SejmMVC
 {
-    public class InvalidPosełFirstName : Exception { }
-    public class InvalidPosełLastName : Exception { }
-    public class NoPosełClub : Exception { }
-    public class PosełUpdateError : Exception { }
-    public class PosełDeleteError : Exception { }
+    public class InvalidPosełFirstName : Exception {
+        public InvalidPosełFirstName() : base("Niepoprawne imię!") { }
+    }
+
+    public class InvalidPosełLastName : Exception {
+        public InvalidPosełLastName() : base("Niepoprawne nazwisko!") { }
+    }
+
+    public class PosełUpdateError : Exception {
+        public PosełUpdateError() : base("Posła nie ma już w bazie!") { }
+    }
+
+    public class PosełDeleteError : Exception {
+        public PosełDeleteError() : base("Posła nie ma już w bazie!") { }
+    }
+
     
-    public class InvalidClubName : Exception { }
-    public class InvalidClubShorthand : Exception { }
-    public class ClubNameNonUnique : Exception { }
-    public class ClubShorthandNonUnique : Exception { }
-    public class ClubUpdateError : Exception { }
-    public class ClubDeleteError : Exception { }
+    public class InvalidClubName : Exception {
+        public InvalidClubName() : base("Niepoprawna nazwa!") { }
+    }
 
-    public class InvalidActName : Exception { }
-    public class InvalidActDate : Exception { }
-    public class ActNameNonUnique : Exception { }
-    public class NoActClub : Exception { }
-    public class ActUpdateError : Exception { }
-    public class ActDeleteError : Exception { }
+    public class InvalidClubShorthand : Exception {
+        public InvalidClubShorthand() : base("Niepoprawny skrót!") { }
+    }
 
-    public class NoVotePoseł : Exception { }
-    public class NoVoteAct : Exception { }
-    public class VoteUpdateError : Exception { }
-    public class VoteDeleteError : Exception { }
+    public class ClubNameNonUnique : Exception {
+        public ClubNameNonUnique() : base("Klub o takiej nazwie już istnieje!") { }
+    }
+
+    public class ClubShorthandNonUnique : Exception {
+        public ClubShorthandNonUnique() : base("Klub o takim skrócie już istnieje!") { }
+    }
+
+    public class ClubUpdateError : Exception {
+        public ClubUpdateError() : base("Klubu nie ma już w bazie!") { }
+    }
+
+    public class ClubDeleteError : Exception {
+        public ClubDeleteError() : base("Klubu nie ma już w bazie!") { }
+    }
+
+
+    public class InvalidActName : Exception {
+        public InvalidActName() : base("Niepoprawna nazwa!") { }
+    }
+
+    public class InvalidActDate : Exception {
+        public InvalidActDate() : base("Niepoprawna data!") { }
+    }
+
+    public class ActNameNonUnique : Exception {
+        public ActNameNonUnique() : base("Ustawa o takiej nazwie już istnieje!") { }
+    }
+
+    public class NoActClub : Exception {
+        public NoActClub() : base("Nie wybrano klubu!") { }
+    }
+
+    public class ActUpdateError : Exception {
+        public ActUpdateError() : base("Ustawy nie ma w bazie!") { }
+    }
+
+    public class ActDeleteError : Exception {
+        public ActDeleteError() : base("Ustawy nie ma w bazie!") { }
+    }
+
+
+    public class NoVotePoseł : Exception {
+        public NoVotePoseł() : base("Nie wybrano posła!") { }
+    }
+
+    public class NoVoteAct : Exception {
+        public NoVoteAct() : base("Nie wybrano ustawy!") { }
+    }
+
+    public class VoteUpdateError : Exception {
+        public VoteUpdateError() : base("Głosu nie ma w bazie!") { }
+    }
+
+    public class VoteDeleteError : Exception {
+        public VoteDeleteError() : base("Głosu nie ma w bazie!") { }
+    }
 
     public class Storage
     {
@@ -79,14 +137,14 @@ namespace SejmMVC
                     //log.Error(st.FirstName + " " + st.LastName + " (" + st.IndexNo + ") - Create: Invalid born city!");
                     throw new InvalidPosełLastName();
                 }
-                else if(st.Klub == null)
-                {
-                    throw new NoPosełClub();
-                }
                 else
                 {
-                    var kl = db.Klub.Find(st.Klub.ID);
-                    st.Klub = kl;
+                    if(st.Klub != null)
+                    {
+                        var kl = db.Klub.Find(st.Klub.ID);
+                        st.Klub = kl;
+                    }
+                    
                     db.Poseł.Add(st);
                     db.SaveChanges();
                 }
@@ -107,10 +165,6 @@ namespace SejmMVC
                 {
                     //log.Error(st.FirstName + " " + st.LastName + " (" + st.IndexNo + ") - Create: Invalid born city!");
                     throw new InvalidPosełLastName();
-                }
-                else if(st.Klub == null)
-                {
-                    throw new NoPosełClub();
                 }
                 else
                 {

@@ -12,7 +12,6 @@ namespace SejmMVC.Models
         public string filterUstawaByClub { get; set; }
         public string filterUstawaByName { get; set; }
         public string filterVoteByName { get; set; }
-        public string ErrMsg { get; set; }
 
         public SejmData data { get; set; }
 

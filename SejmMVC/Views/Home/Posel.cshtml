@@ -1,7 +1,365 @@
-﻿
-@{
-    ViewBag.Title = "Posel";
-}
+﻿@model SejmMVC.Models.PosełClubViewModel
 
-<h2>Posel</h2>
 
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SejmMVC</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="~/Content/Site.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+</head>
+<body style="color:black">
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <!-- Grid for the view -->
+        <div class="container students-view" style="width: 100vw">
+
+
+
+            <!-- Content row -->
+            <div class="row">
+
+                <!-- Posłowie panel -->
+                <div class="col-md-6">
+
+                    <!-- Cards row -->
+                    <div class="row">
+                        <!-- Search card -->
+                        <div class="col-md-4">
+                            <a href="~/Home/Index" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                                Wyszukaj
+                            </a>
+                        </div>
+
+                        <!-- Poseł i klub card -->
+                        <div class="col-md-4">
+                            <a href="~/Home/Posel" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                                Posłowie i kluby
+                            </a>
+                        </div>
+
+                        <!-- Vote and acts card -->
+                        <div class="col-md-4">
+                            <a href="~/Home/Vote" role="button" class="btn btn-info" style="width:100%;cursor:default">
+                                Ustawy i głosy
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <!-- Dotted container for posłowie list -->
+                    <div style="border-style: dotted; border-width: thin; margin-bottom: 2vh">
+                        <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                            POSŁOWIE
+                        </div>
+
+                        <!-- Filter posłów row-->
+                        <div class="row" style="padding: 1vh">
+
+                            <!-- Filter fields -->
+                            <div class="col-md-10">
+
+                                <!-- Filter by club row -->
+                                <div class="row">
+                                    <div class="col-md-3" style="text-align:right">
+                                        Klub:
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.DropDownListFor(
+                                m => m.filterPosełByClub,
+                                Model.data.Kluby.Select(
+                                    s => new SelectListItem()
+                                    { Text = s.Nazwa, Value = s.ID.ToString() }
+                                ).Concat(new SelectListItem[] {
+                                    new SelectListItem() { Text = "No filter", Value = "", Selected=true }
+                                }),
+                                new { @style = "width:100%;height:4vh" }
+                            )
+                                    </div>
+                                </div>
+
+                                <!-- Filter by name row -->
+                                <div class="row">
+                                    <div class="col-md-3" style="text-align:right">
+                                        Imie/Nazwisko:
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(
+                                m => m.filterPosełByName, "",
+                                new { @style = "width:100%" }
+                            )
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> <!-- /Filter row -->
+                        <!-- Filter buttons row -->
+                        <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                            <!-- Filter button -->
+                            <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px;margin:auto">
+                                <input type="submit" value="Filtruj" class="btn btn-success"
+                                       style="width:100%; height:100%; margin:auto;cursor:default" />
+                            </div>
+
+                            <!-- Clear button -->
+                            <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px">
+                                <a href="~/Home/Posel" role="button" class="btn btn-danger" style="width:100%;height:100%;cursor:default;margin:auto">
+                                    Odśwież
+                                </a>
+                            </div>
+                        </div>
+
+
+                        <!-- Poseł list row -->
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <!-- Fixed-width scrolled container for students data-->
+                                <div style="height: 25vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
+                                    <table style="width:100%">
+
+                                        @foreach (var st in Model.data.Posłowie)
+                                        {
+                                            <tr class="student-list-row" onclick="location.href = '@Url.Action("Posel","Home",new { pId = st.ID })'">
+                                                <td>
+                                                    @Html.DisplayFor(s => st.Nazwisko)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(s => st.Imie)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(s => st.Klub.Nazwa)
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                            </div>
+                        </div> <!-- /Poseł list row -->
+
+                    </div> <!-- /Container-->
+
+                    <!-- Potential error messages row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <span style="color:red;text-align:center;margin:auto">
+                                @Html.DisplayFor(m => m.PosełErrMsg)
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Change klub row -->
+                    <div class="row">
+                        <div class="col-md-4" style="text-align:right">
+                            Klub parlamentarny:
+                        </div>
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(
+                                m => m.editedPosełKlub,
+                                Model.data.Kluby.Select(
+                                    s => new SelectListItem()
+                                    { Text = s.Nazwa, Value = s.ID.ToString() }
+                                ).Concat(new SelectListItem[] {
+                                    new SelectListItem() { Text = "--", Value = "", Selected=true }
+                                }),
+                                new { @style = "width:100%;height:4vh" }
+                    )
+                        </div>
+                    </div>
+
+                    <!-- Change Imie -->
+                    <div class="row">
+                        <div class="col-md-4" style="text-align:right">
+                            Imie:
+                        </div>
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(
+                   m => m.EditedPoseł.Imie, Model.EditedPoseł.Imie,
+                   new { @style = "width:100%" })
+                        </div>
+                    </div>
+
+                    <!-- Change Nazwisko -->
+                    <div class="row">
+                        <div class="col-md-4" style="text-align:right">
+                            Nazwisko:
+                        </div>
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(
+                   m => m.EditedPoseł.Nazwisko, Model.EditedPoseł.Nazwisko,
+                   new { @style = "width:100%" })
+                        </div>
+                    </div>
+
+                    @Html.HiddenFor(m => m.EditedPoseł.ID, "")
+                    @Html.HiddenFor(m => m.EditedPoseł.Stamp, "")
+
+                    <!-- Save/Delete/New buttons -->
+                    <div class="row">
+                        <div class="col-md-4" style="padding:0.5vh">
+                            <input type="submit" class="btn btn-info" value="Zapisz posła" name="action" style="width:100%;cursor:default" />
+                        </div>
+                        <div class="col-md-4" style="padding:0.5vh">
+                            <input type="submit" class="btn btn-info" value="Usuń posła" name="action" style="width:100%;cursor:default" />
+                        </div>
+                        <div class="col-md-4" style="padding:0.5vh;padding-right:15px">
+                            <input type="submit" class="btn btn-info" value="Nowy poseł" name="action" style="width:100%;cursor:default" />
+                        </div>
+                    </div>
+
+                     </div> <!-- Posłowie panel -->
+
+                <!-- Clubs panel -->
+                <div class="col-md-6" style="padding-top: 5.5vh">
+
+                    <!-- Dotted container for clubs -->
+                    <div style="border-style: dotted; border-width: thin; margin-bottom: 2vh">
+                        <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;">
+                            KLUBY
+                        </div>
+
+                        <!-- Filter Głosy row-->
+                        <div id="glosy" class="row" style="padding: 1vh">
+
+                            <!-- Filter fields -->
+                            <div class="col-md-10">
+
+                                <!-- Filter by name row -->
+                                <div class="row">
+                                    <div class="col-md-3" style="text-align:right">
+                                        Filtruj:
+                                    </div>
+                                    <div class="col-md-9">
+                                        @Html.TextBoxFor(
+                                m => m.filterClubByName, "",
+                                new { @style = "width:100%" }
+                            )
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div> <!-- /Filter row -->
+
+                        <!-- Filter votes buttons row -->
+                        <div class="row" style="margin:2vh; text-align:center; font-size: 4vh;padding-top:5vh">
+                            <!-- Filter button -->
+                            <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px;margin:auto">
+                                <input type="submit" value="Filtruj" class="btn btn-success"
+                                       style="width:100%; height:100%; margin:auto;cursor:default" />
+                            </div>
+
+                            <!-- Clear button -->
+                            <div class="col-md-6" style="height:4vh;padding:0;padding-right:15px">
+                                <a href="~/Home/Posel" role="button" class="btn btn-danger" style="width:100%;height:100%;cursor:default;margin:auto">
+                                    Odśwież
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Kluby list row -->
+                        <div class="row">
+                            <div class="col-md-12">
+
+                                <!-- Fixed-width scrolled container for ustawy data-->
+                                <div style="height: 25vh; overflow-y: scroll;border-style:solid;border-width:thin;border-color:gray">
+                                    <table style="width:100%">
+
+                                        @foreach (var st in Model.data.Kluby)
+                                        {
+                                            <tr class="student-list-row" onclick="location.href = '@Url.Action("Posel","Home",new { cId = st.ID })'">
+                                                <td>
+                                                    @Html.DisplayFor(s => st.Nazwa)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(s => st.Skrót)
+                                                </td>
+                                                <td>
+                                            </tr>
+                                        }
+                                    </table>
+
+
+                                </div>  <!-- list of ustawy -->
+
+                            </div>
+
+                        </div> <!-- Kluby list row -->
+
+                    </div> <!-- /Dotted Container for clubs -->
+
+
+
+                    <!-- Potential error messages row -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <span style="color:red;text-align:center;margin:auto">
+                                @Html.DisplayFor(m => m.KlubErrMsg)
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Change Nazwa -->
+                    <div class="row">
+                        <div class="col-md-4" style="text-align:right">
+                            Nazwa:
+                        </div>
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(
+                   m => m.EditedKlub.Nazwa, Model.EditedKlub.Nazwa,
+                   new { @style = "width:100%" })
+                        </div>
+                    </div>
+
+                    <!-- Change Skrót -->
+                    <div class="row">
+                        <div class="col-md-4" style="text-align:right">
+                            Skrót:
+                        </div>
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(
+                   m => m.EditedKlub.Skrót, Model.EditedKlub.Skrót,
+                   new { @style = "width:100%" })
+                        </div>
+                    </div>
+
+                   @Html.HiddenFor(m => m.EditedKlub.ID, "")
+                   @Html.HiddenFor(m => m.EditedKlub.Stamp, "")
+
+                    <!-- Save/Delete/New buttons -->
+                    <div class="row" style="padding-top: 4vh">
+                        <div class="col-md-4" style="padding:0.5vh">
+                            <input type="submit" class="btn btn-info" value="Zapisz klub" name="action" style="width:100%;cursor:default" />
+                        </div>
+                        <div class="col-md-4" style="padding:0.5vh">
+                            <input type="submit" class="btn btn-info" value="Usuń klub" name="action" style="width:100%;cursor:default" />
+                        </div>
+                        <div class="col-md-4" style="padding:0.5vh;padding-right:15px">
+                            <input type="submit" class="btn btn-info" value="Nowy klub" name="action" style="width:100%;cursor:default" />
+                        </div>
+                    </div>
+                        
+
+                    </div> <!-- Clubs panel -->
+
+                </div> <!-- Content row -->
+
+
+
+        </div> <!-- /Grid -->
+
+    }
+    <!-- /Html.BeginForm -->
+
+
+</body>
+</html>
