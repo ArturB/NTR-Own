@@ -43,8 +43,7 @@
             modelBuilder.Entity<Klub>()
                 .HasMany(e => e.Ustawa)
                 .WithRequired(e => e.Klub)
-                .HasForeignKey(e => e.ZgłoszonaPrzez)
-                .WillCascadeOnDelete(false);
+                .HasForeignKey(e => e.ZgłoszonaPrzez);
 
             modelBuilder.Entity<Poseł>()
                 .Property(e => e.Imie)
@@ -61,8 +60,7 @@
             modelBuilder.Entity<Poseł>()
                 .HasMany(e => e.Głos)
                 .WithRequired(e => e.Poseł1)
-                .HasForeignKey(e => e.Poseł)
-                .WillCascadeOnDelete(false);
+                .HasForeignKey(e => e.Poseł);
 
             modelBuilder.Entity<Ustawa>()
                 .Property(e => e.Nazwa)
@@ -75,8 +73,7 @@
             modelBuilder.Entity<Ustawa>()
                 .HasMany(e => e.Głos)
                 .WithRequired(e => e.Ustawa1)
-                .HasForeignKey(e => e.Ustawa)
-                .WillCascadeOnDelete(false);
+                .HasForeignKey(e => e.Ustawa);
         }
     }
 }

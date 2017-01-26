@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using SejmMVC.Models;
 using System.Text.RegularExpressions;
+using System.Data;
+using System.Data.Entity.Infrastructure;
 
 namespace SejmMVC.Controllers
 {
@@ -163,7 +165,11 @@ namespace SejmMVC.Controllers
                     stg.updatePoseł(svm.EditedPoseł);
                     svm.PosełErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.PosełErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.PosełErrMsg = "Exception: " + e.Message;
                 }
@@ -178,7 +184,11 @@ namespace SejmMVC.Controllers
                     stg.deletePoseł(svm.EditedPoseł);
                     svm.PosełErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.PosełErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.PosełErrMsg = "Exception: " + e.Message;
                 }
@@ -192,6 +202,10 @@ namespace SejmMVC.Controllers
                     svm.EditedPoseł.Klub = svm.data.Kluby.Find(c => c.ID.ToString().Equals(collection["editedPosełKlub"]));
                     stg.createPoseł(svm.EditedPoseł);
                     svm.PosełErrMsg = "";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.PosełErrMsg = "Exception: " + "Konflikt edycji!";
                 }
                 catch (Exception e)
                 {
@@ -207,7 +221,11 @@ namespace SejmMVC.Controllers
                     stg.updateClub(svm.EditedKlub);
                     svm.KlubErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.KlubErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.KlubErrMsg = "Exception: " + e.Message;
                 }
@@ -220,6 +238,10 @@ namespace SejmMVC.Controllers
                 {
                     stg.deleteClub(svm.EditedKlub);
                     svm.KlubErrMsg = "";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.KlubErrMsg = "Exception: " + "Konflikt edycji!";
                 }
                 catch (Exception e)
                 {
@@ -234,6 +256,10 @@ namespace SejmMVC.Controllers
                 {
                     stg.createClub(svm.EditedKlub);
                     svm.KlubErrMsg = "";
+                }
+                catch(DbUpdateConcurrencyException)
+                {
+                    svm.KlubErrMsg = "Exception: " + "Konflikt edycji!";
                 }
                 catch (Exception e)
                 {
@@ -363,7 +389,11 @@ namespace SejmMVC.Controllers
                     stg.updateAct(svm.EditedUstawa);
                     svm.UstawaErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.UstawaErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.UstawaErrMsg = "Exception: " + e.Message;
                 }
@@ -377,7 +407,11 @@ namespace SejmMVC.Controllers
                     stg.deleteAct(svm.EditedUstawa);
                     svm.UstawaErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.UstawaErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.UstawaErrMsg = "Exception: " + e.Message;
                 }
@@ -392,6 +426,10 @@ namespace SejmMVC.Controllers
                     svm.EditedUstawa.Data = DateTime.Parse(collection["EditedUstawa.Data"]);
                     stg.createAct(svm.EditedUstawa);
                     svm.UstawaErrMsg = "";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.UstawaErrMsg = "Exception: " + "Konflikt edycji!";
                 }
                 catch (Exception e)
                 {
@@ -413,7 +451,11 @@ namespace SejmMVC.Controllers
                     stg.updateVote(svm.EditedGłos);
                     svm.VoteErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.VoteErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.VoteErrMsg = "Exception: " + e.Message;
                 }
@@ -427,7 +469,11 @@ namespace SejmMVC.Controllers
                     stg.deleteVote(svm.EditedGłos);
                     svm.VoteErrMsg = "";
                 }
-                catch(Exception e)
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.VoteErrMsg = "Exception: " + "Konflikt edycji!";
+                }
+                catch (Exception e)
                 {
                     svm.VoteErrMsg = "Exception: " + e.Message;
                 }
@@ -446,6 +492,10 @@ namespace SejmMVC.Controllers
                         (collection["editedVoteGłos"].Equals("Za") ? true : false);
                     stg.createVote(svm.EditedGłos);
                     svm.VoteErrMsg = "";
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    svm.VoteErrMsg = "Exception: " + "Konflikt edycji!";
                 }
                 catch (Exception e)
                 {
