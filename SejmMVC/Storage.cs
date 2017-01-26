@@ -93,8 +93,7 @@ namespace SejmMVC
 
     public class Storage
     {
-        string ValidNameRegex      = @"^[A-ZĄĆĘŁÓŃŚŻŹ][A-ZĄĆĘŁÓŃŚŻŹ a-ząćęłóńśżź\-]+$";
-        string ValidGroupNameRegex = @"^[A-ZĄĆĘŁÓŃŚŻŹ][A-ZĄĆĘŁÓŃŚŻŹ a-ząćęłóńśżź0-9\-]+$";
+        string ValidNameRegex      = @"^[A-ZĄĆĘŁÓŃŚŻŹ'.][A-ZĄĆĘŁÓŃŚŻŹ'. a-ząćęłóńśżź0-9\-]+$";
 
         bool validString(string s, int size)
         {
@@ -169,13 +168,23 @@ namespace SejmMVC
                 else
                 {
                     var original = db.Poseł.Find(st.ID);
-                    var kl = db.Klub.Find(st.Klub.ID);
+                    var kl = (Klub)null;
+                    if(st.Klub != null)
+                    {
+                        kl = db.Klub.Find(st.Klub.ID);
+                    }
+                    else
+                    {
+                        original.Klub = null;
+                        original.Klub_parlamentarny = null;
+                    }
+                    
 
                     if (original != null)
                     {
                         original.Imie = st.Imie;
                         original.Nazwisko = st.Nazwisko;
-                        original.Klub = st.Klub;
+                        original.Klub = kl;
 
                         db.Entry(original).State = EntityState.Modified;
                         db.Entry(original).OriginalValues["Stamp"] = st.Stamp;
@@ -225,7 +234,7 @@ namespace SejmMVC
                     //log.Error(gr.Name + " - Create: Name not unique!");
                     throw new ClubNameNonUnique();
                 }
-                else if (!validString(gr.Nazwa, 32))
+                else if (!validString(gr.Nazwa, 256))
                 {
                     //log.Error(gr.Name + " - Create: Name invalid!");
                     throw new InvalidClubName();
@@ -253,20 +262,10 @@ namespace SejmMVC
         {
             using (var db = new StorageContext())
             {
-                if (db.Klub.Where(s => s.Nazwa == gr.Nazwa).Count() > 0)
-                {
-                    //log.Error(gr.Name + " - Create: Name not unique!");
-                    throw new ClubNameNonUnique();
-                }
-                else if (!validString(gr.Nazwa, 32))
+                if (!validString(gr.Nazwa, 256))
                 {
                     //log.Error(gr.Name + " - Create: Name invalid!");
                     throw new InvalidClubName();
-                }
-                if (db.Klub.Where(s => s.Skrót == gr.Skrót).Count() > 0)
-                {
-                    //log.Error(gr.Name + " - Create: Name not unique!");
-                    throw new ClubShorthandNonUnique();
                 }
                 else if (!validString(gr.Skrót, 10))
                 {
@@ -339,6 +338,8 @@ namespace SejmMVC
                 }
                 else
                 {
+                    var kl = db.Klub.Find(gr.Klub.ID);
+                    gr.Klub = kl;
                     db.Ustawa.Add(gr);
                     db.SaveChanges();
                 }
@@ -350,12 +351,7 @@ namespace SejmMVC
         {
             using (var db = new StorageContext())
             {
-                if (db.Klub.Where(s => s.Nazwa == gr.Nazwa).Count() > 0)
-                {
-                    //log.Error(gr.Name + " - Create: Name not unique!");
-                    throw new ActNameNonUnique();
-                }
-                else if (!validString(gr.Nazwa, 32))
+                if (!validString(gr.Nazwa, 32))
                 {
                     //log.Error(gr.Name + " - Create: Name invalid!");
                     throw new InvalidActName();
@@ -426,6 +422,10 @@ namespace SejmMVC
                 }
                 else
                 {
+                    var pos = db.Poseł.Find(gr.Poseł1.ID);
+                    var ust = db.Ustawa.Find(gr.Ustawa1.ID);
+                    gr.Poseł1 = pos;
+                    gr.Ustawa1 = ust;
                     db.Głos.Add(gr);
                     db.SaveChanges();
                 }
@@ -493,9 +493,6 @@ namespace SejmMVC
             }
 
         } // deleteAct
-
-
-
 
 
 

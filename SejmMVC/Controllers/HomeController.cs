@@ -134,23 +134,38 @@ namespace SejmMVC.Controllers
         }
 
         [HttpGet]
-        public ActionResult Posel(int? pId, int? cId, string action, FormCollection collection, bool? isGet)
+        public ActionResult Posel(int? pId, int? cId, string action, FormCollection collection, bool? isPost)
         {
             Storage stg = new Storage();
             PosełClubViewModel svm = new PosełClubViewModel();
             svm.data = stg.getData();
 
+            if (isPost != null)
+            {
+                svm.EditedPoseł.ID = int.Parse(collection["EditedPoseł.ID"]);
+                svm.EditedPoseł.Imie = collection["EditedPoseł.Imie"];
+                svm.EditedPoseł.Nazwisko = collection["EditedPoseł.Nazwisko"];
+                svm.EditedPoseł.Stamp = Convert.FromBase64String(collection["EditedPoseł.Stamp"]);
+
+                svm.EditedKlub.ID = int.Parse(collection["EditedKlub.ID"]);
+                svm.EditedKlub.Nazwa = collection["EditedKlub.Nazwa"];
+                svm.EditedKlub.Skrót = collection["EditedKlub.Skrót"];
+                svm.EditedKlub.Stamp = Convert.FromBase64String(collection["EditedKlub.Stamp"]);
+            }
+            
+
             //Zapisz posła
             if (action == "Zapisz posła")
             {
-                svm.EditedPoseł.Klub = svm.data.Kluby.Find(c => c.ID.ToString().Equals(collection["editedPosełKlub"]));
                 try
                 {
+                    svm.EditedPoseł.Klub = svm.data.Kluby.Find(c => c.ID.ToString().Equals(collection["editedPosełKlub"]));
                     stg.updatePoseł(svm.EditedPoseł);
+                    svm.PosełErrMsg = "";
                 }
                 catch(Exception e)
                 {
-                    svm.PosełErrMsg = e.Message;
+                    svm.PosełErrMsg = "Exception: " + e.Message;
                 }
                 
             }
@@ -158,32 +173,77 @@ namespace SejmMVC.Controllers
             //Usuń posła
             else if(action == "Usuń posła")
             {
-                svm.PosełErrMsg = action;
+                try
+                {
+                    stg.deletePoseł(svm.EditedPoseł);
+                    svm.PosełErrMsg = "";
+                }
+                catch(Exception e)
+                {
+                    svm.PosełErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Nowy poseł
             else if(action == "Nowy poseł")
             {
-                svm.PosełErrMsg = action;
+                try
+                {
+                    svm.EditedPoseł.Klub = svm.data.Kluby.Find(c => c.ID.ToString().Equals(collection["editedPosełKlub"]));
+                    stg.createPoseł(svm.EditedPoseł);
+                    svm.PosełErrMsg = "";
+                }
+                catch (Exception e)
+                {
+                    svm.PosełErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Zapisz klub
             else if(action == "Zapisz klub")
             {
-                svm.KlubErrMsg = action;
+                try
+                {
+                    stg.updateClub(svm.EditedKlub);
+                    svm.KlubErrMsg = "";
+                }
+                catch(Exception e)
+                {
+                    svm.KlubErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Usuń klub
             else if(action == "Usuń klub")
             {
-                svm.KlubErrMsg = action;
+                try
+                {
+                    stg.deleteClub(svm.EditedKlub);
+                    svm.KlubErrMsg = "";
+                }
+                catch (Exception e)
+                {
+                    svm.KlubErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Nowy klub
             else if(action == "Nowy klub")
             {
-                svm.KlubErrMsg = action;
+                try
+                {
+                    stg.createClub(svm.EditedKlub);
+                    svm.KlubErrMsg = "";
+                }
+                catch (Exception e)
+                {
+                    svm.KlubErrMsg = "Exception: " + e.Message;
+                }
             }
+
+            svm = new PosełClubViewModel { KlubErrMsg = svm.KlubErrMsg, PosełErrMsg = svm.PosełErrMsg };
+            svm.data = stg.getData();
+            svm.editedPosełKlub = "";
 
 
             if (collection != null)
@@ -241,17 +301,21 @@ namespace SejmMVC.Controllers
                              select c;
             }
 
-            if (pId != null)
+            if (pId != null && action != "Usuń posła")
             {
                 svm.EditedPoseł = (from p in psFiltered
                                    where p.ID == (int)pId
                                    select p).First();
-                svm.editedPosełKlub = (from c in clFiltered
-                                       where c.ID == svm.EditedPoseł.Klub.ID
-                                       select c).First().ID.ToString();
+                if(svm.EditedPoseł.Klub != null)
+                {
+                    svm.editedPosełKlub = (from c in clFiltered
+                                           where c.ID == svm.EditedPoseł.Klub.ID
+                                           select c).First().ID.ToString();
+                }
+                
             }
 
-            if (cId != null)
+            if (cId != null && action != "Usuń klub")
             {
                 svm.EditedKlub = (from c in clFiltered
                                    where c.ID == (int)cId
@@ -273,46 +337,127 @@ namespace SejmMVC.Controllers
         }
 
         [HttpGet]
-        public ActionResult Vote(int? uId, int? gId, string action, FormCollection collection, bool? isGet)
+        public ActionResult Vote(int? uId, int? gId, string action, FormCollection collection, bool? isPost)
         {
+            Storage stg = new Storage();
             ActVoteViewModel svm = new ActVoteViewModel();
-            svm.data = new Storage().getData();
+            svm.data = stg.getData();
+
+            if(isPost != null)
+            {
+                svm.EditedUstawa.ID = int.Parse(collection["EditedUstawa.ID"]);
+                svm.EditedUstawa.Nazwa = collection["EditedUstawa.Nazwa"];
+                svm.EditedUstawa.Stamp = Convert.FromBase64String(collection["EditedUstawa.Stamp"]);
+
+                svm.EditedGłos.ID = int.Parse(collection["EditedGłos.ID"]);
+                svm.EditedGłos.Stamp = Convert.FromBase64String(collection["EditedGłos.Stamp"]);
+            }
 
             //Zapisz ustawę
             if(action == "Zapisz ustawę")
             {
-                svm.UstawaErrMsg = action; 
+                try
+                {
+                    svm.EditedUstawa.Klub = svm.data.Kluby.Find(c => c.ID.ToString() == collection["editedUstawaKlub"]);
+                    svm.EditedUstawa.Data = DateTime.Parse(collection["EditedUstawa.Data"]);
+                    stg.updateAct(svm.EditedUstawa);
+                    svm.UstawaErrMsg = "";
+                }
+                catch(Exception e)
+                {
+                    svm.UstawaErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Usuń ustawę
             else if(action == "Usuń ustawę")
             {
-                svm.UstawaErrMsg = action;
+                try
+                {
+                    stg.deleteAct(svm.EditedUstawa);
+                    svm.UstawaErrMsg = "";
+                }
+                catch(Exception e)
+                {
+                    svm.UstawaErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Nowa ustawa
             else if(action == "Nowa ustawa")
             {
-                svm.UstawaErrMsg = action;
+                try
+                {
+                    svm.EditedUstawa.Klub = svm.data.Kluby.Find(c => c.ID.ToString() == collection["editedUstawaKlub"]);
+                    svm.EditedUstawa.Data = DateTime.Parse(collection["EditedUstawa.Data"]);
+                    stg.createAct(svm.EditedUstawa);
+                    svm.UstawaErrMsg = "";
+                }
+                catch (Exception e)
+                {
+                    svm.UstawaErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Zapisz głos
             else if(action == "Zapisz głos")
             {
-                svm.VoteErrMsg = action;
+                try
+                {
+                    svm.EditedGłos.Poseł1 = svm.data.Posłowie.Find(p => p.ID.ToString().Equals(collection["editedVotePoseł"]));
+                    svm.EditedGłos.Ustawa1 = svm.data.Ustawy.Find(u => u.ID.ToString().Equals(collection["editedVoteUstawa"]));
+                    svm.EditedGłos.Głosował = 
+                        collection["editedVoteGłos"].Equals("Wstrzymał się") ? 
+                        (bool?)null : 
+                        (collection["editedVoteGłos"].Equals("Za") ? true : false);
+                    stg.updateVote(svm.EditedGłos);
+                    svm.VoteErrMsg = "";
+                }
+                catch(Exception e)
+                {
+                    svm.VoteErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Usuń głos
             else if(action == "Usuń głos")
             {
-                svm.VoteErrMsg = action;
+                try
+                {
+                    stg.deleteVote(svm.EditedGłos);
+                    svm.VoteErrMsg = "";
+                }
+                catch(Exception e)
+                {
+                    svm.VoteErrMsg = "Exception: " + e.Message;
+                }
             }
 
             //Nowy głos
             else if(action == "Nowy głos")
             {
-                svm.VoteErrMsg = action;
+                try
+                {
+                    svm.EditedGłos.Poseł1 = svm.data.Posłowie.Find(p => p.ID.ToString().Equals(collection["editedVotePoseł"]));
+                    svm.EditedGłos.Ustawa1 = svm.data.Ustawy.Find(u => u.ID.ToString().Equals(collection["editedVoteUstawa"]));
+                    svm.EditedGłos.Głosował =
+                        collection["editedVoteGłos"].Equals("Wstrzymał się") ?
+                        (bool?)null :
+                        (collection["editedVoteGłos"].Equals("Za") ? true : false);
+                    stg.createVote(svm.EditedGłos);
+                    svm.VoteErrMsg = "";
+                }
+                catch (Exception e)
+                {
+                    svm.VoteErrMsg = "Exception: " + e.Message;
+                }
             }
+
+            svm = new ActVoteViewModel { UstawaErrMsg = svm.UstawaErrMsg, VoteErrMsg = svm.VoteErrMsg };
+            svm.data = stg.getData();
+            svm.editedVoteGłos = "";
+            svm.editedVotePoseł = "";
+            svm.editedUstawaKlub = "";
 
             if (collection != null)
             {
@@ -372,7 +517,7 @@ namespace SejmMVC.Controllers
                              select g;
             }
 
-            if (uId != null)
+            if (uId != null && action != "Usuń ustawę")
             {
                 svm.EditedUstawa = (from u in usFiltered
                                    where u.ID == (int)uId
@@ -382,7 +527,7 @@ namespace SejmMVC.Controllers
                                        select c).First().ID.ToString();
             }
 
-            if (gId != null)
+            if (gId != null && action != "Usuń głos")
             {
                 svm.EditedGłos = (from g in glFiltered
                                    where g.ID == (int)gId

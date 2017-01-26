@@ -194,7 +194,10 @@
                         </div>
                         <div class="col-md-8">
                             @Html.TextBoxFor(
-                   m => m.EditedUstawa.Data, Model.editedUstawaData,
+                   m => m.EditedUstawa.Data, 
+                   Model.EditedUstawa.Data.Day + "." + 
+                   Model.EditedUstawa.Data.Month + "." + 
+                   Model.EditedUstawa.Data.Year,
                    new { @style = "width:100%" })
                         </div>
                     </div>
@@ -342,7 +345,7 @@
                                 m => m.editedVotePoseł,
                                 Model.data.Posłowie.Select(
                                     s => new SelectListItem()
-                                    { Text = s.Nazwisko + s.Imie + "(" + s.Klub.Skrót + ")", Value = s.ID.ToString() }
+                                    { Text = s.Nazwisko + s.Imie + (s.Klub != null ? "(" + s.Klub.Skrót + ")" : ""), Value = s.ID.ToString() }
                                 ).Concat(new SelectListItem[] {
                                     new SelectListItem() { Text = "--", Value = "", Selected=true }
                                 }),
